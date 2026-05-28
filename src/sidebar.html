@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./design-tokens.css" />
+    <link rel="stylesheet" href="./sidebar.css" />
+    <title>Libro de Quejas</title>
+  </head>
+  <body>
+    <main class="popup-root">
+      <header class="header">
+        <img src="./assets/logo.png" alt="logo" />
+        <h1 class="title">Libro de quejas</h1>
+      </header>
+
+      <p class="alias-line" id="aliasLine">@usuario</p>
+
+      <section class="section-box">
+        <div class="inline-row">
+          <h2 class="section-title">Modo queja</h2>
+          <button class="lq-button mode-button" id="activateModeBtn">Activar</button>
+        </div>
+        <p class="alias-line" id="modeStatus">Estado: pendiente</p>
+      </section>
+
+      <section class="section-box">
+        <h2 class="section-title">Cómo funciona</h2>
+        <ol class="tutorial-list">
+          <li>Navegás cualquier página.</li>
+          <li>Seleccionás lo que te molesta.</li>
+          <li>Dejás tu queja anónima.</li>
+          <li>Otras personas la ven y reaccionan.</li>
+        </ol>
+      </section>
+
+      <section class="section-box" id="featuredView">
+        <div class="inline-row">
+          <h2 class="section-title">🔥 Quejas Destacadas</h2>
+          <button class="link-button" id="viewAllBtn">Ver todas las quejas</button>
+        </div>
+        <div class="featured-list" id="featuredList"></div>
+      </section>
+
+      <section class="section-box hidden" id="allView">
+        <div class="inline-row">
+          <h2 class="section-title">Todas las quejas</h2>
+          <button class="link-button" id="backBtn">Volver</button>
+        </div>
+        <div class="all-list" id="allList"></div>
+        <div class="pagination">
+          <button class="link-button" id="prevPageBtn">Anterior</button>
+          <span id="pageInfo"></span>
+          <button class="link-button" id="nextPageBtn">Siguiente</button>
+        </div>
+      </section>
+
+      <footer class="lq-card footer-user">
+        <p class="footer-alias" id="footerAlias">@usuario</p>
+        <button class="edit-button" id="editAliasBtn" title="Editar alias">✏️</button>
+      </footer>
+    </main>
+
+    <script type="module" src="./sidebar.js"></script>
+  </body>
+</html>

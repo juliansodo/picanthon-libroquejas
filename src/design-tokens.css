@@ -1,0 +1,59 @@
+:root {
+  --color-text-primary: rgba(245, 245, 247, 1);
+  --color-text-muted: rgba(172, 172, 181, 1);
+  --color-bg-secondary: rgba(65, 54, 85, 1);
+  --color-bg-primary: rgba(34, 32, 40, 1);
+  --color-bg-surface: rgba(47, 45, 58, 1);
+  --color-accent: rgba(152, 88, 250, 1);
+
+  --font-family-base: "Inter", "Segoe UI", sans-serif;
+  --font-size-xs: 12px;
+  --font-size-sm: 13px;
+  --font-size-md: 14px;
+  --font-size-lg: 18px;
+  --font-weight-normal: 400;
+  --font-weight-semibold: 600;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+
+  --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.28);
+  --motion-fast: 120ms ease;
+  --motion-normal: 220ms ease;
+
+  --z-marker: 2147483000;
+  --z-popup: 2147483200;
+  --z-sidebar: 2147483400;
+}
+
+.lq-card {
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+}
+
+.lq-button {
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--color-accent);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  font-weight: var(--font-weight-semibold);
+  transition: transform var(--motion-fast), opacity var(--motion-fast);
+}
+
+.lq-button:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+.lq-muted {
+  color: var(--color-text-muted);
+}

@@ -1,0 +1,60 @@
+{
+  "manifest_version": 3,
+  "name": "Libro de Quejas",
+  "version": "0.1.0",
+  "description": "Comentarios anonimos por seccion sobre cualquier pagina web.",
+  "permissions": [
+    "sidePanel",
+    "scripting",
+    "storage",
+    "activeTab",
+    "tabs"
+  ],
+  "host_permissions": [
+    "<all_urls>",
+    "https://*.googleapis.com/*"
+  ],
+  "action": {
+    "default_title": "Libro de Quejas"
+  },
+  "background": {
+    "service_worker": "src/background.js",
+    "type": "module"
+  },
+  "side_panel": {
+    "default_path": "src/sidebar.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "src/content.js"
+      ],
+      "css": [
+        "src/design-tokens.css",
+        "src/content.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "src/assets/logo.png",
+        "src/design-tokens.css",
+        "src/content.css",
+        "src/comment-model.js",
+        "src/storage.js",
+        "src/user-identity.js",
+        "src/firestore-serializer.js",
+        "src/firestore-client.js",
+        "src/firebase-config.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ]
+}

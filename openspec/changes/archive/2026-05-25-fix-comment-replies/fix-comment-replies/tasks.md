@@ -1,0 +1,7 @@
+- [x] Implementar interacción del botón responder
+- [x] Mostrar textarea de respuesta debajo del comentario
+- [x] Crear comentario hijo usando `parentId`
+- [x] Renderizar respuestas anidadas
+- [x] Actualizar sidebar y popup en tiempo real
+- [x] Validar persistencia después de refresh
+- [x] Agregar estados loading/error
