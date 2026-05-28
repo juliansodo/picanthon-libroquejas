@@ -3,6 +3,12 @@
   "name": "Libro de Quejas",
   "version": "0.1.0",
   "description": "Comentarios anonimos por seccion sobre cualquier pagina web.",
+  "icons": {
+    "16": "src/assets/logo.png",
+    "32": "src/assets/logo.png",
+    "48": "src/assets/logo.png",
+    "128": "src/assets/logo.png"
+  },
   "permissions": [
     "sidePanel",
     "scripting",
@@ -15,7 +21,11 @@
     "https://*.googleapis.com/*"
   ],
   "action": {
-    "default_title": "Libro de Quejas"
+    "default_title": "Libro de Quejas",
+    "default_icon": {
+      "16": "src/assets/logo.png",
+      "32": "src/assets/logo.png"
+    }
   },
   "background": {
     "service_worker": "src/background.js",

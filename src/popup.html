@@ -16,7 +16,7 @@
 
       <p class="alias-line" id="aliasLine">@usuario</p>
 
-      <section class="section-box">
+      <section class="section-box" id="tutorialView">
         <h2 class="section-title">Cómo funciona</h2>
         <ol class="tutorial-list">
           <li>Navegás cualquier página.</li>
@@ -27,17 +27,15 @@
       </section>
 
       <section class="section-box" id="featuredView">
-        <div class="inline-row">
-          <h2 class="section-title">🔥 Quejas Destacadas</h2>
-          <button class="link-button" id="viewAllBtn">Ver todas las quejas</button>
-        </div>
+        <h2 class="section-title">🔥 Quejas Destacadas</h2>
         <div class="featured-list" id="featuredList"></div>
+        <button class="link-button featured-action" id="viewAllBtn">Ver todas las quejas</button>
       </section>
 
       <section class="section-box hidden" id="allView">
-        <div class="inline-row">
+        <div class="all-view-head">
+          <button class="link-button all-back-button" id="backBtn">← Volver</button>
           <h2 class="section-title">Todas las quejas</h2>
-          <button class="link-button" id="backBtn">Volver</button>
         </div>
         <div class="all-list" id="allList"></div>
         <div class="pagination">
@@ -47,8 +45,16 @@
         </div>
       </section>
 
-      <footer class="lq-card footer-user">
-        <p class="footer-alias" id="footerAlias">@usuario</p>
+      <footer class="lq-card footer-user" id="mainFooter">
+        <div class="footer-user-left">
+          <span class="footer-user-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M5 20a7 7 0 0 1 14 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <p class="footer-alias" id="footerAlias">@usuario</p>
+        </div>
         <button class="edit-button" id="editAliasBtn" title="Editar alias">✏️</button>
       </footer>
     </main>

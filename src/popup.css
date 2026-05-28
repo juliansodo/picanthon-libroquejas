@@ -22,8 +22,8 @@ body {
 }
 
 .header img {
-  width: 32px;
-  height: 32px;
+  width: 52px;
+  height: 52px;
 }
 
 .title {
@@ -60,17 +60,39 @@ body {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
+ 
 }
 
 .complaint-item {
-  background: var(--color-bg-secondary);
+  background: rgba(65, 54, 85, 1);
   border-radius: var(--radius-sm);
   padding: var(--space-2);
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
 }
 
 .complaint-item p {
   margin: 0;
+}
+
+.complaint-text {
+  flex: 1;
+  font-size: var(--font-size-sm);
+  line-height: 1.2;
+}
+
+.complaint-like-pill {
+  border: 1px solid var(--color-accent);
+  background: rgba(152, 88, 250, 0.15);
+  color: var(--color-accent);
+  border-radius: var(--radius-sm);
+  min-width: 64px;
+  height: 30px;
+  font-size: var(--font-size-xs);
+  cursor: pointer;
 }
 
 .complaint-meta {
@@ -85,12 +107,38 @@ body {
   align-items: center;
 }
 
+.all-view-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
 .link-button {
   background: transparent;
   border: 0;
   color: var(--color-accent);
   cursor: pointer;
   font-size: var(--font-size-sm);
+}
+
+.featured-action {
+  width: 100%;
+  margin-top: var(--space-2);
+  padding: var(--space-2);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-surface);
+  color: var(--color-accent);
+  text-align: center;
+}
+
+.all-back-button {
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  color: var(--color-accent);
+  background: var(--color-bg-surface);
 }
 
 .mode-button {
@@ -105,6 +153,24 @@ body {
   align-items: center;
   gap: var(--space-2);
   padding: var(--space-3);
+}
+
+.footer-user-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.footer-user-icon {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  color: var(--color-text-muted);
+}
+
+.footer-user-icon svg {
+  width: 18px;
+  height: 18px;
 }
 
 .footer-alias {

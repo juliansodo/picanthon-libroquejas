@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600&display=swap");
+
 :root {
   --color-text-primary: rgba(245, 245, 247, 1);
   --color-text-muted: rgba(172, 172, 181, 1);
@@ -6,7 +8,7 @@
   --color-bg-surface: rgba(47, 45, 58, 1);
   --color-accent: rgba(152, 88, 250, 1);
 
-  --font-family-base: "Inter", "Segoe UI", sans-serif;
+  --font-family-base: "Plus Jakarta Sans", "Inter", "Segoe UI", sans-serif;
   --font-size-xs: 12px;
   --font-size-sm: 13px;
   --font-size-md: 14px;

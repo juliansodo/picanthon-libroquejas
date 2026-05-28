@@ -5,7 +5,7 @@ export const FEATURED_LIMIT = 5;
 
 export function buildPageId(url) {
   const parsed = new URL(url);
-  return `${parsed.host}${parsed.pathname}`;
+  return parsed.href;
 }
 
 export function compactContext(url) {

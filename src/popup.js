@@ -1,5 +1,5 @@
 import { firestoreClient } from "./firestore-client.js";
-import { FEATURED_LIMIT, PAGE_SIZE_ALL_COMPLAINTS, compactContext } from "./comment-model.js";
+import { FEATURED_LIMIT, PAGE_SIZE_ALL_COMPLAINTS } from "./comment-model.js";
 import { ensureIdentity, updateIdentityName } from "./user-identity.js";
 import {
   getAllCache,
@@ -12,6 +12,7 @@ import {
 
 const state = {
   identity: null,
+  currentRoomUrl: "",
   allPage: 1,
   allData: { items: [], totalPages: 1, page: 1 }
 };
@@ -24,6 +25,8 @@ const viewAllBtn = document.getElementById("viewAllBtn");
 const backBtn = document.getElementById("backBtn");
 const featuredView = document.getElementById("featuredView");
 const allView = document.getElementById("allView");
+const tutorialView = document.getElementById("tutorialView");
+const mainFooter = document.getElementById("mainFooter");
 const editAliasBtn = document.getElementById("editAliasBtn");
 const pageInfo = document.getElementById("pageInfo");
 const prevPageBtn = document.getElementById("prevPageBtn");
@@ -36,15 +39,13 @@ init().catch((error) => {
 });
 
 viewAllBtn.addEventListener("click", async () => {
-  featuredView.classList.add("hidden");
-  allView.classList.remove("hidden");
+  setAllComplaintsPage(true);
   state.allPage = 1;
   await loadAllComplaints();
 });
 
 backBtn.addEventListener("click", () => {
-  allView.classList.add("hidden");
-  featuredView.classList.remove("hidden");
+  setAllComplaintsPage(false);
 });
 
 prevPageBtn.addEventListener("click", async () => {
@@ -74,26 +75,36 @@ if (activateModeBtn) {
 async function init() {
   state.identity = await ensureIdentity();
   renderIdentity();
-  await activateComplaintModeOnTab();
-  startModeKeepAlive();
-  await loadFeaturedComplaints();
+  state.currentRoomUrl = await resolveCurrentRoomUrl();
+  await setComplaintMode(false);
+  bindRuntimeRefresh();
+  startSidebarRefreshLoops();
+  await refreshSidebarData({ includeAll: false, forceRoomSync: true });
 }
 
 function renderIdentity() {
   const value = `@${state.identity.username}`;
-  aliasLine.textContent = value;
-  footerAlias.textContent = value;
+  if (aliasLine) aliasLine.textContent = value;
+  if (footerAlias) footerAlias.textContent = value;
 }
 
 async function loadFeaturedComplaints() {
   let items = [];
   let degraded = false;
+  let totalComplaints = 0;
   try {
-    items = await firestoreClient.getFeaturedComplaints(FEATURED_LIMIT);
+    const roomItems = await firestoreClient.getCommentsByPage(state.currentRoomUrl);
+    const exactRoomItems = roomItems.filter((item) => item?.pageUrl === state.currentRoomUrl);
+    const complaintsOnly = exactRoomItems.filter((item) => !item.parentId);
+    items = complaintsOnly.slice(0, FEATURED_LIMIT);
     await saveFeaturedCache(items);
+    totalComplaints = complaintsOnly.length;
   } catch (_error) {
-    items = await getFeaturedCache();
+    const cachedRoomItems = (await getFeaturedCache()).filter((item) => item?.pageUrl === state.currentRoomUrl && !item?.parentId);
+    items = cachedRoomItems;
     degraded = true;
+    const cachedAll = (await getAllCache()).filter((item) => item?.pageUrl === state.currentRoomUrl && !item?.parentId);
+    totalComplaints = cachedAll.length;
   }
 
   featuredList.innerHTML = "";
@@ -105,6 +116,7 @@ async function loadFeaturedComplaints() {
   }
 
   const safeItems = items.slice(0, FEATURED_LIMIT);
+  updateViewAllLabel(totalComplaints);
   if (!safeItems.length) {
     featuredList.innerHTML += '<p class="lq-muted">Todavia no hay quejas destacadas.</p>';
     return;
@@ -118,15 +130,24 @@ async function loadFeaturedComplaints() {
 async function loadAllComplaints() {
   let degraded = false;
   try {
-    state.allData = await firestoreClient.getAllComplaints(state.allPage, PAGE_SIZE_ALL_COMPLAINTS);
-    await saveAllCache(state.allData.items);
-  } catch (error) {
-    const cached = await getAllCache();
-    degraded = true;
+    const roomItems = await firestoreClient.getCommentsByPage(state.currentRoomUrl);
+    const exactRoomItems = roomItems.filter((item) => item?.pageUrl === state.currentRoomUrl);
+    const complaintsOnly = exactRoomItems.filter((item) => !item.parentId);
+    const start = (state.allPage - 1) * PAGE_SIZE_ALL_COMPLAINTS;
     state.allData = {
-      items: cached.slice(0, PAGE_SIZE_ALL_COMPLAINTS),
-      totalPages: 1,
-      page: 1
+      items: complaintsOnly.slice(start, start + PAGE_SIZE_ALL_COMPLAINTS),
+      totalPages: Math.max(1, Math.ceil(complaintsOnly.length / PAGE_SIZE_ALL_COMPLAINTS)),
+      page: state.allPage
+    };
+    await saveAllCache(complaintsOnly);
+  } catch (error) {
+    const cached = (await getAllCache()).filter((item) => item?.pageUrl === state.currentRoomUrl);
+    degraded = true;
+    const start = (state.allPage - 1) * PAGE_SIZE_ALL_COMPLAINTS;
+    state.allData = {
+      items: cached.slice(start, start + PAGE_SIZE_ALL_COMPLAINTS),
+      totalPages: Math.max(1, Math.ceil(cached.length / PAGE_SIZE_ALL_COMPLAINTS)),
+      page: state.allPage
     };
     if (!cached.length) {
       allList.innerHTML = `<p class="lq-muted">${escapeHtml(error.message || "No se pudieron cargar las quejas.")}</p>`;
@@ -149,15 +170,76 @@ async function loadAllComplaints() {
   pageInfo.textContent = `Página ${state.allData.page} de ${state.allData.totalPages}`;
 }
 
+async function resolveCurrentRoomUrl() {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  if (!tab?.url) return "";
+  try {
+    return new URL(tab.url).href;
+  } catch (_) {
+    return "";
+  }
+}
+
+async function refreshSidebarData({ includeAll = false, forceRoomSync = false } = {}) {
+  if (forceRoomSync) {
+    const nextRoomUrl = await resolveCurrentRoomUrl();
+    if (nextRoomUrl && nextRoomUrl !== state.currentRoomUrl) {
+      state.currentRoomUrl = nextRoomUrl;
+      state.allPage = 1;
+      setAllComplaintsPage(false);
+    }
+  }
+
+  await loadFeaturedComplaints();
+  if (includeAll || !allView.classList.contains("hidden")) {
+    await loadAllComplaints();
+  }
+}
+
+function startSidebarRefreshLoops() {
+  setInterval(() => {
+    if (!document.hidden) {
+      refreshSidebarData({ includeAll: false, forceRoomSync: true });
+    }
+  }, 1500);
+
+  setInterval(() => {
+    if (!document.hidden) {
+      refreshSidebarData({ includeAll: false, forceRoomSync: false });
+    }
+  }, 15000);
+}
+
+function bindRuntimeRefresh() {
+  chrome.runtime.onMessage.addListener((message) => {
+    if (message?.type !== "ROOM_COMMENTS_UPDATED") return;
+    if (!message.pageUrl || message.pageUrl !== state.currentRoomUrl) return;
+    refreshSidebarData({ includeAll: !allView.classList.contains("hidden"), forceRoomSync: false });
+  });
+}
+
 function createComplaintItem(item) {
   const node = document.createElement("article");
   node.className = "complaint-item";
   node.innerHTML = `
-    <p>${escapeHtml(item.emoji || "💬")} ${escapeHtml((item.text || "").slice(0, 90))}</p>
-    <p class="complaint-meta">@${escapeHtml(item.username || "anon")} · ${Number(item.likeCount || 0)} likes · ${compactContext(item.pageUrl || "")}</p>
+    <p class="complaint-text">${escapeHtml(item.emoji || "💬")} ${escapeHtml((item.text || "").slice(0, 90))}</p>
+    <button class="complaint-like-pill" type="button">👍 ${Number(item.likeCount || 0)}</button>
   `;
   node.addEventListener("click", () => navigateToComplaint(item));
   return node;
+}
+
+function updateViewAllLabel(total) {
+  if (!viewAllBtn) return;
+  const count = Math.max(0, Number(total || 0));
+  viewAllBtn.textContent = `Ver todas las quejas (${count})`;
+}
+
+function setAllComplaintsPage(showAll) {
+  featuredView.classList.toggle("hidden", showAll);
+  allView.classList.toggle("hidden", !showAll);
+  if (tutorialView) tutorialView.classList.toggle("hidden", showAll);
+  if (mainFooter) mainFooter.classList.toggle("hidden", showAll);
 }
 
 async function navigateToComplaint(item) {
@@ -205,14 +287,6 @@ async function activateComplaintModeOnTab() {
       if (modeStatus) modeStatus.textContent = "Estado: no se pudo activar en esta pestaña. Probá recargar la página.";
     }
   }
-}
-
-function startModeKeepAlive() {
-  setInterval(() => {
-    if (!document.hidden) {
-      activateComplaintModeOnTab();
-    }
-  }, 4000);
 }
 
 async function ensureContentScript(tabId) {
